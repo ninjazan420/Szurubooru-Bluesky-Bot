@@ -54,7 +54,7 @@ def fetch_post_from_szurubooru(post_id):
         return None
 
 # Funktion zum Posten auf Bluesky
-def post_to_bluesky(jwt, did, content, media_url=None):
+def post_to_bluesky(jwt, did, content):
     headers = {
         'Authorization': f'Bearer {jwt}',
         'Content-Type': 'application/json'
@@ -75,8 +75,41 @@ def post_to_bluesky(jwt, did, content, media_url=None):
     
     if response.status_code == 200:
         print("Post successful")
+        post_response = response.json()
+        return post_response['uri']
     else:
         print("Post failed")
+        print(response.text)
+        return None
+
+# Funktion zum Antworten auf den Bluesky-Post
+def reply_to_post(jwt, did, post_uri, reply_content):
+    headers = {
+        'Authorization': f'Bearer {jwt}',
+        'Content-Type': 'application/json'
+    }
+
+    current_time = datetime.now(timezone.utc).isoformat()
+
+    reply_payload = {
+        "repo": did,
+        "collection": "app.bsky.feed.post",
+        "record": {
+            "text": reply_content,
+            "createdAt": current_time,
+            "reply": {
+                "root": post_uri,
+                "parent": post_uri
+            }
+        }
+    }
+    
+    response = requests.post(f'{BASE_URL}/xrpc/com.atproto.repo.createRecord', headers=headers, json=reply_payload)
+    
+    if response.status_code == 200:
+        print("Reply successful")
+    else:
+        print("Reply failed")
         print(response.text)
 
 # Hauptschleife zum Abrufen und Posten von Beiträgen
@@ -91,23 +124,42 @@ def post_loop():
         post_data = fetch_post_from_szurubooru(post_id)
         
         if post_data:
-            title = post_data.get('tags', [{}])[0].get('names', ['No Title'])[0]
+            title = post_data.get('tags', [{}])[0].get('names', ['No Title'])
             comment = post_data.get('comments', [{}])[0].get('text', 'No Comment')
             user = post_data.get('user', {})
             username = user.get('name', 'Anonymous')
             
             # URLs anpassen
             post_url = f"{POST_BASE_URL}/{post_id}"
+            media_url = f"https://f0ck.org/data/posts/{post_data['contentUrl']}"
+            
+            # Formatierung der Tags
+            tags = [f"#{tag['names'][0]}" for tag in post_data.get('tags', [])][:4]  # Maximal 4 Tags
             
             content = (
-                f"🌐 Post URL: {post_url}\n"
+                f"Post ID: {post_id}\n"
+                f"🌟 Tags: {', '.join(tags)}\n"
                 f"💬 Comment: {comment}\n"
-                f"🌟 Tags: {title}\n"
                 f"📸 Post by {username}"
             )
             
-            post_to_bluesky(jwt, did, content)
-            print(f"Posted post ID {post_id} to Bluesky")
+            # Warten vor dem Posten
+            print("Waiting for 5 seconds before posting...")
+            time.sleep(5)
+            
+            post_uri = post_to_bluesky(jwt, did, content)
+            
+            if post_uri:
+                reply_content = f"Post URL: {post_url}"
+                
+                # Warten vor der Antwort
+                print("Waiting for 5 seconds before replying...")
+                time.sleep(5)
+                
+                # Antwort auf den Beitrag posten
+                reply_to_post(jwt, did, post_uri, reply_content)
+                print(f"Posted post ID {post_id} to Bluesky and replied with post URL")
+            
             post_id += 1  # Move to the next post ID
             time.sleep(6 * 60 * 60)  # 6 Stunden warten nach einem erfolgreichen Post
         
