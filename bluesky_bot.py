@@ -94,7 +94,6 @@ def post_loop():
         post_data = fetch_post_from_szurubooru(post_id)
         
         if post_data:
-            title = post_data.get('tags', [{}])[0].get('names', ['No Title'])
             comment = post_data.get('comments', [{}])[0].get('text', 'No Comment')
             user = post_data.get('user', {})
             username = user.get('name', 'Anonymous')
@@ -111,7 +110,6 @@ def post_loop():
                 f"🌟 Tags: {', '.join(tags)}\n"
                 f"💬 Comment: {comment}\n"
                 f"📸 Post by {username}\n\n"
-                f"🔗 [View Post]({media_url})\n"
                 f"🌐 Post URL: {post_url}"
             )
             
