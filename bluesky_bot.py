@@ -11,7 +11,6 @@ BASE_URL = 'https://bsky.social'
 SZURU_API_URL = 'https://f0ck.org/api'
 
 # Basis-URL für die Bild- und Post-Links
-IMAGE_BASE_URL = 'https://f0ck.org/data/posts'
 POST_BASE_URL = 'https://f0ck.org/post'
 
 # Funktion zum Einloggen in Bluesky
@@ -31,36 +30,6 @@ def login_to_bluesky():
         print("Login failed")
         print(response.text)
         return None, None
-
-# Funktion zum Hochladen einer Mediendatei zu Bluesky
-def upload_media(jwt, media_url):
-    headers = {
-        'Authorization': f'Bearer {jwt}',
-        'Content-Type': 'application/json'
-    }
-    
-    # Herunterladen der Mediendatei
-    media_response = requests.get(media_url)
-    if media_response.status_code != 200:
-        print(f"Failed to download media from {media_url}")
-        return None
-    
-    media_data = media_response.content
-    files = {
-        'file': ('mediafile', media_data)
-    }
-    
-    upload_response = requests.post(f'{BASE_URL}/xrpc/com.atproto.repo.uploadBlob', headers=headers, files=files)
-    
-    if upload_response.status_code == 200:
-        upload_data = upload_response.json()
-        media_url = upload_data.get('blob', {}).get('url', '')
-        print(f"Media upload successful: {media_url}")
-        return media_url
-    else:
-        print("Media upload failed")
-        print(upload_response.text)
-        return None
 
 # Funktion zum Abrufen eines spezifischen Beitrags von f0ck.org
 def fetch_post_from_szurubooru(post_id):
@@ -102,10 +71,6 @@ def post_to_bluesky(jwt, did, content, media_url=None):
         }
     }
     
-    if media_url:
-        # Anhang hinzufügen, wenn vorhanden
-        record_payload["record"]["attachments"] = [media_url]
-    
     response = requests.post(f'{BASE_URL}/xrpc/com.atproto.repo.createRecord', headers=headers, json=record_payload)
     
     if response.status_code == 200:
@@ -127,27 +92,21 @@ def post_loop():
         
         if post_data:
             title = post_data.get('tags', [{}])[0].get('names', ['No Title'])[0]
-            file_url = post_data.get('contentUrl', 'No URL')
             comment = post_data.get('comments', [{}])[0].get('text', 'No Comment')
             user = post_data.get('user', {})
             username = user.get('name', 'Anonymous')
             
             # URLs anpassen
-            image_url = f"{IMAGE_BASE_URL}/{file_url.split('/')[-1]}"  # Die URL des Bildes
             post_url = f"{POST_BASE_URL}/{post_id}"
             
-            # Mediendatei hochladen
-            media_url = upload_media(jwt, image_url) if file_url != 'No URL' else None
-            
             content = (
-                f"📸 New Post by {username}\n"
-                f"💬 Comment: {comment}\n\n"
-                f"🔗 View Post: {image_url}\n"
-                f"🌐 Post URL: {post_url}\n\n"
-                f"🌟 Tags: {title}"
+                f"🌐 Post URL: {post_url}\n"
+                f"💬 Comment: {comment}\n"
+                f"🌟 Tags: {title}\n"
+                f"📸 Post by {username}"
             )
             
-            post_to_bluesky(jwt, did, content, media_url)
+            post_to_bluesky(jwt, did, content)
             print(f"Posted post ID {post_id} to Bluesky")
             post_id += 1  # Move to the next post ID
             time.sleep(6 * 60 * 60)  # 6 Stunden warten nach einem erfolgreichen Post
