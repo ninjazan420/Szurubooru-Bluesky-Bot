@@ -50,6 +50,7 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
 
 Each post on Bluesky will be formatted as follows:
 
-![grafik](https://github.com/user-attachments/assets/a321c2ea-d721-4bc7-bb53-c786fcc22731)
+![grafik](https://github.com/user-attachments/assets/6b973650-5a19-4aba-b79c-1c8c648653fa)
+
 
 
