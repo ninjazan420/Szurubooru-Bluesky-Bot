@@ -105,11 +105,15 @@ def post_loop():
             # Formatierung der Tags
             tags = [f"#{tag['names'][0]}" for tag in post_data.get('tags', [])][:4]  # Maximal 4 Tags
             
+            score_up = post_data.get('score', 0)  # Falls vorhanden
+            score_down = 0  # Beispielwert, falls nicht vorhanden
+            
             content = (
-                f"Post ID: {post_id}\n"
+                f"🌍 Post ID: {post_id}\n"
                 f"🌟 Tags: {', '.join(tags)}\n"
-                f"💬 Comment: {comment}\n"
-                f"📸 Post by {username}\n\n"
+                f"💬 Comment: {comment} by {username}\n"
+                f"📸 Post by {username}\n"
+                f"👍 Score: Up: {score_up} Down: {score_down}\n"
                 f"🌐 Post URL: {post_url}"
             )
             
