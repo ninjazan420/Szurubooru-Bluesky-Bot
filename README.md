@@ -18,7 +18,7 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
 1. **Clone the repository**:
 
     ```bash
-    git clone https://github.com/yourusername/bluesky-post-automation.git
+    git clone https://github.com/ninjazan420/bluesky-post-automation.git
     cd bluesky-post-automation
     ```
 
