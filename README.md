@@ -4,7 +4,7 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
 
 ## Features
 
-- **Automated Posting**: Automatically posts content from f0ck.org to Bluesky.
+- **Automated Posting**: Automatically posts content from f0ck.org to [our Bluesky](https://bsky.app/profile/f0ck.org).
 - **Content Formatting**: Formats the post with URLs, comments, tags, and user information.
 - **Scheduled Posting**: Posts every 6 hours or skips to the next post if no valid content is found.
 
@@ -46,11 +46,16 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
    - For each valid post, it formats the content and posts it to Bluesky.
    - If a post is not found, it skips to the next ID and retries.
 
+
+![grafik](https://github.com/user-attachments/assets/d066490c-1e7d-4ea7-a08c-4f31d68021c8)
+
+
+
 ## Post Format
 
 Each post on Bluesky will be formatted as follows:
 
-![grafik](https://github.com/user-attachments/assets/6b973650-5a19-4aba-b79c-1c8c648653fa)
+![grafik](https://github.com/user-attachments/assets/468fc6da-4172-42d8-8c79-d189dc300194)
 
 
 
