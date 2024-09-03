@@ -82,36 +82,6 @@ def post_to_bluesky(jwt, did, content):
         print(response.text)
         return None
 
-# Funktion zum Antworten auf den Bluesky-Post
-def reply_to_post(jwt, did, post_uri, reply_content):
-    headers = {
-        'Authorization': f'Bearer {jwt}',
-        'Content-Type': 'application/json'
-    }
-
-    current_time = datetime.now(timezone.utc).isoformat()
-
-    reply_payload = {
-        "repo": did,
-        "collection": "app.bsky.feed.post",
-        "record": {
-            "text": reply_content,
-            "createdAt": current_time,
-            "reply": {
-                "root": post_uri,
-                "parent": post_uri
-            }
-        }
-    }
-    
-    response = requests.post(f'{BASE_URL}/xrpc/com.atproto.repo.createRecord', headers=headers, json=reply_payload)
-    
-    if response.status_code == 200:
-        print("Reply successful")
-    else:
-        print("Reply failed")
-        print(response.text)
-
 # Hauptschleife zum Abrufen und Posten von Beiträgen
 def post_loop():
     jwt, did = login_to_bluesky()
@@ -140,7 +110,9 @@ def post_loop():
                 f"Post ID: {post_id}\n"
                 f"🌟 Tags: {', '.join(tags)}\n"
                 f"💬 Comment: {comment}\n"
-                f"📸 Post by {username}"
+                f"📸 Post by {username}\n\n"
+                f"🔗 [View Post]({media_url})\n"
+                f"🌐 Post URL: {post_url}"
             )
             
             # Warten vor dem Posten
@@ -150,15 +122,7 @@ def post_loop():
             post_uri = post_to_bluesky(jwt, did, content)
             
             if post_uri:
-                reply_content = f"Post URL: {post_url}"
-                
-                # Warten vor der Antwort
-                print("Waiting for 5 seconds before replying...")
-                time.sleep(5)
-                
-                # Antwort auf den Beitrag posten
-                reply_to_post(jwt, did, post_uri, reply_content)
-                print(f"Posted post ID {post_id} to Bluesky and replied with post URL")
+                print(f"Posted post ID {post_id} to Bluesky")
             
             post_id += 1  # Move to the next post ID
             time.sleep(6 * 60 * 60)  # 6 Stunden warten nach einem erfolgreichen Post
