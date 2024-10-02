@@ -2,18 +2,16 @@ import requests
 from datetime import datetime, timezone
 import time
 
-# Deine Bluesky-Anmeldeinformationen
+# Bluesky Login creds
 USERNAME = 'your_bluesky_username'
 PASSWORD = 'your_bluesky_password'
 BASE_URL = 'https://bsky.social'
 
-# API-URL für f0ck.org
-SZURU_API_URL = 'https://f0ck.org/api'
+# API-URL of your instance
+SZURU_API_URL = 'https://URLHERE/api'
 
-# Basis-URL für die Bild- und Post-Links
-POST_BASE_URL = 'https://f0ck.org/post'
+POST_BASE_URL = 'https://URLHERE/post'
 
-# Funktion zum Einloggen in Bluesky
 def login_to_bluesky():
     session = requests.Session()
     login_payload = {
@@ -31,7 +29,6 @@ def login_to_bluesky():
         print(response.text)
         return None, None
 
-# Funktion zum Abrufen eines spezifischen Beitrags von f0ck.org
 def fetch_post_from_szurubooru(post_id):
     try:
         headers = {
@@ -52,8 +49,6 @@ def fetch_post_from_szurubooru(post_id):
     except Exception as e:
         print(f"Error fetching post {post_id}: {e}")
         return None
-
-# Funktion zum Posten auf Bluesky
 def post_to_bluesky(jwt, did, content):
     headers = {
         'Authorization': f'Bearer {jwt}',
@@ -82,13 +77,12 @@ def post_to_bluesky(jwt, did, content):
         print(response.text)
         return None
 
-# Hauptschleife zum Abrufen und Posten von Beiträgen
 def post_loop():
     jwt, did = login_to_bluesky()
     if not (jwt and did):
         return
 
-    post_id = 1  # Start bei Post-ID 1
+    post_id = 1  # Start at post id 1
 
     while True:
         post_data = fetch_post_from_szurubooru(post_id)
@@ -98,15 +92,14 @@ def post_loop():
             user = post_data.get('user', {})
             username = user.get('name', 'Anonymous')
             
-            # URLs anpassen
+            # Format URLS
             post_url = f"{POST_BASE_URL}/{post_id}"
             media_url = f"https://f0ck.org/data/posts/{post_data['contentUrl']}"
             
-            # Formatierung der Tags
-            tags = [f"#{tag['names'][0]}" for tag in post_data.get('tags', [])][:4]  # Maximal 4 Tags
+            tags = [f"#{tag['names'][0]}" for tag in post_data.get('tags', [])][:4]  # Max 4 Tags
             
-            score_up = post_data.get('score', 0)  # Falls vorhanden
-            score_down = 0  # Beispielwert, falls nicht vorhanden
+            score_up = post_data.get('score', 0) 
+            score_down = 0  
             
             content = (
                 f"🌍 Post ID: {post_id}\n"
@@ -117,7 +110,6 @@ def post_loop():
                 f"🌐 Post URL: {post_url}"
             )
             
-            # Warten vor dem Posten
             print("Waiting for 5 seconds before posting...")
             time.sleep(5)
             
@@ -127,10 +119,12 @@ def post_loop():
                 print(f"Posted post ID {post_id} to Bluesky")
             
             post_id += 1  # Move to the next post ID
-            time.sleep(6 * 60 * 60)  # 6 Stunden warten nach einem erfolgreichen Post
+
+            # Set your timer in hours. '6' = 1 post every 6 hours.
+            time.sleep(6 * 60 * 60)
         
         else:
-            # Warten 1 Sekunde, bevor die nächste ID ausprobiert wird
+            # if no post was found, skip to next post id
             print(f"No valid post found at ID {post_id}. Skipping to the next ID.")
             post_id += 1
             time.sleep(1)
