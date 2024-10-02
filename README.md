@@ -1,10 +1,10 @@
 # Bluesky Post Automation Script
 
-This script automates the process of posting content from f0ck.org to Bluesky. It periodically fetches posts from f0ck.org, formats them, and posts them to Bluesky with the relevant information.
+This script automates the process of posting content from a running [Szurubooru-instance](https://github.com/rr-/szurubooru) to Bluesky. It periodically fetches posts via API, formats them, and posts them to Bluesky with the relevant information.
 
 ## Features
 
-- **Automated Posting**: Automatically posts content from f0ck.org to [our Bluesky](https://bsky.app/profile/f0ck.org).
+- **Automated Posting**: Automatically posts content from Szurubooru to [Bluesky](https://bsky.app/profile/f0ck.org).
 - **Content Formatting**: Formats the post with URLs, comments, tags, and user information.
 - **Scheduled Posting**: Posts every 6 hours or skips to the next post if no valid content is found.
 
@@ -18,8 +18,8 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
 1. **Clone the repository**:
 
     ```bash
-    git clone https://github.com/ninjazan420/bluesky-post-automation.git
-    cd bluesky-post-automation
+    git clone https://github.com/ninjazan420/Szurubooru-Bluesky-Bot.git
+    cd Szurubooru-Bluesky-Bot
     ```
 
 2. **Install dependencies**:
@@ -31,6 +31,7 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
 3. **Update Configuration**:
 
     Open the script file `bluesky_bot.py` and replace the placeholders for `USERNAME` and `PASSWORD` with your Bluesky credentials.
+    Also change the URLHERE to your actual URL, but do not change /api!
 
 ## Usage
 
@@ -42,7 +43,7 @@ This script automates the process of posting content from f0ck.org to Bluesky. I
 
 2. **How it works**:
    - The script logs into Bluesky using your credentials.
-   - It starts fetching posts from f0ck.org starting from ID 1.
+   - It starts fetching posts from your instance starting from ID 1.
    - For each valid post, it formats the content and posts it to Bluesky.
    - If a post is not found, it skips to the next ID and retries.
 
