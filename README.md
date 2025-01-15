@@ -25,7 +25,7 @@ This script automates the process of posting content from a running [Szurubooru-
 2. **Install dependencies**:
 
     ```bash
-    pip install requests
+    pip install requirements.txt
     ```
 
 3. **Update Configuration**:
